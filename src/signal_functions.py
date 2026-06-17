@@ -2,6 +2,73 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy as scp
+from matplotlib import mlab
+
+# %% Spectrogram_analysis_nfft function:
+def spectrogram_analysis_nfft(signal,fs,NFFT,overlap,plotter=False):
+    '''
+    Returns a spectrogram analysis using the selected Number of samples in the Fast Fourier Transform (NFFT).
+
+    Parameters:
+    - signal (numpy.ndarray): Signal array in A values [a.u.].
+    - fs (float): Frequency sampling of the signal [Hz].
+    - NFFT (int): Samples to produce the FFT in a bin.
+    - overlap (float): Overlap coefficient in bins of the spectrogram. It should be between 0 and 1.
+    - plotter (bool, optional): Flag to represent the spectrogram result. If True, a plot will be generated. Defaults to False.
+
+    Returns:
+    - tspect (numpy.ndarray): Time array of the spectrogram [s].
+    - fspect (numpy.ndarray): Frequency array of the spectrogram [Hz].
+    - psd (numpy.ndarray): The Power Spectral Density (PSD) matrix [dB (re 1A^2/Hz)].
+    - info_spect (list): List with some properties of the calculated spectrogram [Nfft, tbin, fbin, fvalid, overlap].
+        Nfft (int): Samples of Non-equidistant Fast Fourier Transform (NFFT).
+        tbin (float): Time resolution of the spectrogram (taking into account the overlap) [s].
+        fbin (float): Frequency resolution of the spectrogram [Hz].
+        fvalid (float): Frequency lower limit of spectrogram [Hz].
+        overlap (float): Overlap coefficient in bins of the spectrogram.
+
+    Application:
+    tspect, fspect, psd, info_spect = spectrogram_analysis_nfft(signal, fs, Nfft, overlap, plotter=True)
+    
+    Created/Last modified: 2025-12-04
+    * Now the info_spect has also the overlap info: [NFFT,tbin,fbin,fvalid,overlap]
+    '''
+    # Function implementation goes here
+    Nover=int(np.floor(NFFT*overlap))
+    fvalid = np.ceil(2*fs/NFFT)
+    [pspect, fspect, tspect] = mlab.specgram(signal, NFFT = NFFT, Fs = fs, window = np.hamming(NFFT), noverlap = Nover, mode='psd')
+    fbin = fspect[1]-fspect[0]
+    tbin = tspect[1]-tspect[0]
+
+    psd=10*np.log10(pspect) #PSD [dB re 1A^2/Hz]
+    
+    info_spect = [NFFT,tbin,fbin,fvalid,overlap]
+    
+    if plotter:      
+        psd[np.isinf(psd)] = np.nan
+        PSDmin = np.nanmin(psd[np.where((fspect >= fvalid))[0],:]) #dB
+        PSDmax = np.nanmax(psd[np.where((fspect >= fvalid))[0],:]) #dB
+        
+        plt.figure()
+        # getting the original colormap using cm.get_cmap() function
+        orig_map=plt.colormaps.get_cmap('hot')        
+        reversed_map = orig_map.reversed()
+        if max(fspect)<=5e3:
+            plt.pcolormesh(tspect, fspect, psd, cmap=reversed_map, vmin=PSDmin, vmax=PSDmax)
+            plt.axhline(fvalid,color='black',linestyle='--',linewidth=4)
+            plt.ylabel('Frequency [Hz]')
+        else:
+            plt.pcolormesh(tspect, fspect*1e-3, psd, cmap=reversed_map, vmin=PSDmin, vmax=PSDmax)
+            plt.axhline(fvalid*1e-3,color='black',linestyle='--',linewidth=4)
+            plt.ylabel('Frequency [kHz]')
+        plt.title('spectrogram_analysis_nfft\n%i-NFFT (overlap: %i%% ; f$_{ok}\\geq$%i Hz)' %(NFFT,int(overlap*100),fvalid))
+        cbar = plt.colorbar()
+        cbar.set_label('PSD [dB re 1A$^2$/Hz]', rotation=270, verticalalignment='baseline')
+        plt.xlabel('Time [s]')
+        plt.tight_layout()
+        plt.show()
+    
+    return tspect,fspect,psd,info_spect
 
 # %% SigFilt_HP function: 
 def SigFilt_HP(signal, fs, n_filt, fp, plotter=False):
