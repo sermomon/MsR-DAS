@@ -60,7 +60,7 @@ Three frequency bands are selected to separate the different acoustic components
 
 The `spectral_decomposition` function is applied to extract the contribution of each frequency band, and each band is normalized before RGB composition.
 
-Finally, the conventional DAS representation (15--27 Hz) is compared with the proposed MsR representation. In the MsR image, the different Fin Whale vocalization types are highlighted by different colors, allowing type-B and type-A vocalizations to be visually distinguished in red and green, respectively.
+Finally, the conventional DAS representation (15-27 Hz) is compared with the proposed MsR representation. In the MsR image, the different Fin Whale vocalization types are highlighted by different colors, allowing type-B and type-A vocalizations to be visually distinguished in red and green, respectively.
 
 ## Repository structure
 
