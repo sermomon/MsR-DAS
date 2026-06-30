@@ -5,7 +5,7 @@ Morell-Monzó, S., Diego-Tortosa, D., Pérez-Arjona, I., Espinosa, V. (2026) **M
 
 <img width="5410" height="1245" alt="msr-das-scheme" src="https://github.com/user-attachments/assets/f7b5ae6a-2bca-400c-8ac0-42268b9c981e" />
 
-If you use this repository in your research, a citation to this manuscript would be appreciated.
+If you use this repository in your research, a citation to the manuscript would be appreciated.
 
 ## Requirements
 After cloning the repository:
